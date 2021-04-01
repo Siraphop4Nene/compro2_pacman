@@ -61,10 +61,10 @@ class PacmanGame(GameApp):
             'A': self.get_pacman_next_direction_function(self.pacman1, DIR_LEFT),
             'S': self.get_pacman_next_direction_function(self.pacman1, DIR_DOWN),
             'D': self.get_pacman_next_direction_function(self.pacman1, DIR_RIGHT),
-            'I': self.get_pacman_next_direction_function(self.pacman1, DIR_UP),
-            'J': self.get_pacman_next_direction_function(self.pacman1, DIR_LEFT),
-            'K': self.get_pacman_next_direction_function(self.pacman1, DIR_DOWN),
-            'L': self.get_pacman_next_direction_function(self.pacman1, DIR_RIGHT),
+            'I': self.get_pacman_next_direction_function(self.pacman2, DIR_UP),
+            'J': self.get_pacman_next_direction_function(self.pacman2, DIR_LEFT),
+            'K': self.get_pacman_next_direction_function(self.pacman2, DIR_DOWN),
+            'L': self.get_pacman_next_direction_function(self.pacman2, DIR_RIGHT),
         }
 
     def pre_update(self):
@@ -77,11 +77,7 @@ class PacmanGame(GameApp):
         ch = event.char.upper()
 
         if ch in self.command_map:
-            return self.command_map[ch]
-
-
-        # TODO:
-        #   - check if ch is in self.command_map, if it is in the map, call the function.
+            return self.command_map[ch]()
 
     def get_pacman_next_direction_function(self, pacman, next_direction):
 
@@ -89,6 +85,7 @@ class PacmanGame(GameApp):
             pacman.set_next_direction(next_direction)
 
         return f
+
 
 if __name__ == "__main__":
     root = tk.Tk()
