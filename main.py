@@ -1,3 +1,4 @@
+import random
 import tkinter as tk
 
 from gamelib import Sprite, GameApp, Text
@@ -25,23 +26,58 @@ class Pacman(Sprite):
         x, y = maze.piece_center(r,c)
         super().__init__(app, 'images/pacman.png', x, y)
 
+        self.is_super_speed = False
+        self.super_speed_counter = 0
+
+        self.state = NormalPacmanState(self)
+
     def update(self):
         if self.maze.is_at_center(self.x, self.y):
             r, c = self.maze.xy_to_rc(self.x, self.y)
 
             if self.maze.has_dot_at(r, c):
                 self.maze.eat_dot_at(r, c)
+                self.state.random_upgrade()
             
             if self.maze.is_movable_direction(r, c, self.next_direction):
                 self.direction = self.next_direction
             else:
                 self.direction = DIR_STILL
-
-        self.x += PACMAN_SPEED * DIR_OFFSET[self.direction][0]
-        self.y += PACMAN_SPEED * DIR_OFFSET[self.direction][1]
+        self.state.move_pacman()
 
     def set_next_direction(self, direction):
         self.next_direction = direction
+
+
+class NormalPacmanState:
+    def __init__(self, pacman):
+        self.pacman = pacman
+
+    def random_upgrade(self):
+        if random.random() < 0.1:
+            self.pacman.state = SuperPacmanState(self.pacman)
+
+    def move_pacman(self):
+        self.pacman.x += PACMAN_SPEED * DIR_OFFSET[self.pacman.direction][0]
+        self.pacman.y += PACMAN_SPEED * DIR_OFFSET[self.pacman.direction][1]
+
+
+class SuperPacmanState:
+    def __init__(self, pacman):
+        self.pacman = pacman
+        self.counter = 0
+
+    def random_upgrade(self):
+        pass
+
+    def move_pacman(self):
+        speed = PACMAN_SPEED * 2
+        self.pacman.x += speed * DIR_OFFSET[self.pacman.direction][0]
+        self.pacman.y += speed * DIR_OFFSET[self.pacman.direction][1]
+
+        self.counter += 1
+        if self.counter >= 50:
+            self.pacman.state = NormalPacmanState(self.pacman)
 
 
 class PacmanGame(GameApp):
